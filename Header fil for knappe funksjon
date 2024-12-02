@@ -1,0 +1,153 @@
+#include "blind_keys_audio.h"
+// Definering av bokstaver
+int8_t letter = 0;
+
+// Definering av knapper
+#define NUM_BUTTONS 6 // Antall 
+//#define NUM_VIBRATORS 1
+const uint8_t buttonPins[NUM_BUTTONS] = {2, 3, 4, 5, 6, 7}; // Pins for knapper
+//const uint8_t vibrator[NUM_VIBRATORS] = {}
+
+const uint8_t vibrate_pin = 8;
+
+void initialize_buttons();
+bool is_button_pressed(uint8_t pin);
+void wait_for_start();
+void check_buttons_A();
+void check_buttons_B();
+
+// Initialisere alle knappene som pullup 
+void initialize_buttons() {
+  for (int i = 0; i < NUM_BUTTONS; i++) {
+    pinMode(buttonPins[i], INPUT_PULLUP);
+  }
+}
+
+// Funksjon for aa sjekke om en knapp er trykket
+bool is_button_pressed(uint8_t pin) {
+  return digitalRead(pin) == LOW; // Lav betyr at knappen er trykket
+}
+
+// Funksjon for aa starte programmet
+void wait_for_start_alphabet() {
+  if (!is_button_pressed(buttonPins[0])) { // Sjekker forste knapp (pin 2)
+    startknapp_trykket();
+    Serial.println("Startknapp trykket, programmet begynner");
+    delay(3000); // For aa gi litt pusterom
+    letter = 1; // Bytt til neste case
+  }
+}
+
+void vibrate_right(){
+    digitalWrite(vibrate_pin, HIGH);
+    delay(200);
+    digitalWrite(vibrate_pin, LOW);
+}
+
+void vibrate_wrong(){
+    digitalWrite(vibrate_pin, HIGH);
+    delay(100);
+    digitalWrite(vibrate_pin, LOW);
+    delay(100);
+    digitalWrite(vibrate_pin, HIGH);
+    delay(100);
+    digitalWrite(vibrate_pin, LOW);
+}
+
+
+// Funksjon for aa sjekke A
+void check_buttons_A() {
+  // Definer hvilke knapper som skal vaere trykket (1) og ikke trykket (0)
+  const bool expectedState[NUM_BUTTONS] = {true, true, false, true, true, true}; // Tilpass til kravene for A
+
+  bool allCorrect = true;
+
+  for (int i = 0; i < NUM_BUTTONS; i++) {
+    // Sjekk om hver knapp er i forventet tilstand
+    if (is_button_pressed(buttonPins[i]) != expectedState[i]) {
+      allCorrect = false; // Hvis en knapp ikke er i riktig tilstand
+      break; // Avslutt sjekk tidlig
+    }
+  }
+
+  if (allCorrect) {
+    riktig_bra_jobba();
+    vibrate_right();
+    delay(1800);
+    Serial.println("Riktig knapp trykket! Gaar videre til B");
+    letter = 2;
+  } else {
+    feil_prov_igjen();
+    delay(1400);
+    vibrate_wrong();
+    Serial.println("Feil, proov igjen!");
+    letter = 1;
+  }
+
+  delay(1000); // Unngaa raske gjentakelser
+}
+
+// Funksjon for aa sjekke B
+void check_buttons_B() {
+  // Definer hvilke knapper som skal vaere trykket (1) og ikke trykket (0)
+  const bool expectedState[NUM_BUTTONS] = {true, false, false, true, true, true};
+
+  bool allCorrect = true;
+
+  for (int i = 0; i < NUM_BUTTONS; i++) {
+    // Sjekk om hver knapp er i forventet tilstand
+    if (is_button_pressed(buttonPins[i]) != expectedState[i]) {
+      allCorrect = false; // Hvis en knapp ikke er i riktig tilstand
+      break; // Avslutt sjekk tidlig
+    }
+  }
+
+  if (allCorrect) {
+    riktig_bra_jobba();
+    vibrate_right();
+    delay(1800);
+    Serial.println("Riktige knapper trykket! gaar videre til C");
+    letter = 3;
+  } else {
+    feil_prov_igjen();
+    delay(1400);
+    vibrate_wrong();
+    Serial.println("Feil, prov igjen!");
+    letter = 2;
+  }
+
+  delay(1000); // Unngaa raske gjentakelser
+}
+
+
+// Funksjon for aa sjekke C
+void check_buttons_C() {
+  // Definer hvilke knapper som skal vaere trykket (1) og ikke trykket (0)
+  const bool expectedState[NUM_BUTTONS] = {true, true, false, false, true, true}; // Tilpass til kravene for C
+
+  bool allCorrect = true;
+
+  for (int i = 0; i < NUM_BUTTONS; i++) {
+    // Sjekk om hver knapp er i forventet tilstand
+    if (is_button_pressed(buttonPins[i]) != expectedState[i]) {
+      allCorrect = false; // Hvis en knapp ikke er i riktig tilstand
+      break; // Avslutt sjekk tidlig
+    }
+  }
+
+  if (allCorrect) {
+    riktig_bra_jobba();
+    vibrate_right();
+    delay(1800);
+    Serial.println("Riktige knapper trykket! gaar videre til D");
+    letter = 4;
+  } else {
+    feil_prov_igjen();
+    delay(1400);
+    vibrate_wrong();
+    Serial.println("Feil, prov igjen!");
+    letter = 3;
+  }
+
+  delay(1000); // Unngaa raske gjentakelser
+}
