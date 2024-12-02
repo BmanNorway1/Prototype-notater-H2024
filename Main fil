@@ -1,0 +1,73 @@
+#include <DFRobotDFPlayerMini.h>
+#include <Arduino.h>
+#include "animals_braille.h"
+
+void setup() {
+  Serial.begin(115200);
+  initialize_buttons();
+  pinMode(vibrate_pin, OUTPUT);
+  setup_blind_keys_audio();
+  blind_keys_er_klar(); //Audio: klar til bruk
+  Serial.println("Programmet er klart");
+  delay(1000);
+}
+
+void loop() {
+  //debug_blind_keys_audio();
+  switch (letter) {
+    case 0:
+      //velg_program();
+      delay(1000);
+      wait_for_start_alphabet(); 
+      wait_for_start_animals();
+      break;
+    case 1: //Start alfabet
+      Serial.println("Trykk inn for A:");
+      spill_av_a();
+      delay(1000);
+      check_buttons_A();
+      break;
+    case 2:
+      Serial.println("Trykk inn for B:");
+      spill_av_b();
+      delay(1000);
+      check_buttons_B();
+      break;
+    case 3:
+      Serial.println("Trykk inn for C:");
+      spill_av_c();
+      delay(1000);
+      check_buttons_C();
+      break;
+    case 4: // Alfabet ferdig, nullstiller
+      Serial.println("Du er ferdig, godt jobbet!");
+      du_er_ferdig();
+      letter = 0;
+      delay(1000);
+      break;
+    case 5: //Start dyreprogram
+      Serial.println("Hvilket dyr er dette?");
+      hvilket_dyr_er_dette();
+      delay(2000);
+      monkey_sound();
+      delay(2000);
+      animal_sounds_monkey();
+      break;
+    case 6:
+      Serial.println("Hvilket dyr er dette?");
+      hvilket_dyr_er_dette();
+      delay(2000);
+      cow_sound();
+      delay(2000);
+      animal_sounds_cow();
+      break;
+    case 7: //dyreprogram ferdig, nullstiller
+      Serial.println("Du er ferdig, godt jobbet!");
+      du_er_ferdig();
+      letter = 0;
+      delay(1000);
+      break;
+    default:
+      break;
+  }
+}
