@@ -1,0 +1,174 @@
+//Definisjoner start blind_keys_audio
+#if (defined(ARDUINO_AVR_UNO) || defined(ESP8266))   // Using a soft serial port
+#include <SoftwareSerial.h>
+SoftwareSerial softSerial(/*rx =*/10, /*tx =*/11);
+#define FPSerial softSerial
+#else
+#define FPSerial Serial1
+#endif
+
+DFRobotDFPlayerMini blind_keys_audio;
+void printDetail(uint8_t type, int value);
+//Definisjoner stopp blind_keys_audio
+
+//Setup for blink_keys_audio
+void setup_blind_keys_audio(){
+
+ #if (defined ESP32)
+ FPSerial.begin(9600, SERIAL_8N1, /*rx =*/D3, /*tx =*/D2);
+#else
+ FPSerial.begin(9600);
+#endif
+
+ Serial.begin(115200);
+
+ Serial.println();
+ Serial.println(F("DFRobot DFPlayer Mini Demo"));
+ Serial.println(F("Starter blind_keys_audio"));
+
+ if (!blind_keys_audio.begin(FPSerial, /*isACK = */true, /*doReset = */true)) {  //Use serial to communicate with mp3.
+   Serial.println(F("Unable to begin:"));
+   Serial.println(F("1.Sjekk koblinger"));
+   Serial.println(F("2.Sett inn minnekort!"));
+   while(true){
+     delay(0); // Code to compatible with ESP8266 watch dog.
+   }
+ }
+ Serial.println(F("blind_keys_audio klar til bruk"));
+
+ blind_keys_audio.volume(30);  //Set volume value. From 0 to 30
+
+}
+
+//Lyder for bokstaver
+void spill_av_a(){
+ blind_keys_audio.play(8);
+}
+
+void spill_av_b(){
+ blind_keys_audio.play(10);
+}
+
+void spill_av_c(){
+ blind_keys_audio.play(12);
+}
+
+void startknapp_trykket(){
+  blind_keys_audio.play(9);
+}
+
+
+// Generelle lyder
+void feil_prov_igjen(){
+  blind_keys_audio.play(19);
+}
+
+void riktig_bra_jobba(){
+  blind_keys_audio.play(21);
+}
+
+void blind_keys_er_klar(){
+  blind_keys_audio.play(11);
+}
+
+void du_er_ferdig(){
+  blind_keys_audio.play(14);
+}
+
+void velg_program(){
+  blind_keys_audio.play(60); //mangler denne 
+}
+
+
+// Dyreprogram lyder
+void startknapp_trykket_dyreprogram(){
+  blind_keys_audio.play(15);
+}
+
+void hvilket_dyr_er_dette(){
+  blind_keys_audio.play(17);
+}
+
+void riktig_bra_jobba_dyr(){
+  blind_keys_audio.play(16);
+}
+
+void monkey_sound(){
+  blind_keys_audio.play(18);
+}
+
+void cow_sound(){
+  blind_keys_audio.play(13);
+}
+//Avspillingsfunksjoner slutt
+
+
+
+//Funksjon for debugging, legges i loop
+void debug_blind_keys_audio(){
+
+  if (blind_keys_audio.available()) {
+   printDetail(blind_keys_audio.readType(), blind_keys_audio.read()); //Print the detail message from DFPlayer to handle different errors and states.
+ }
+}
+void printDetail(uint8_t type, int value){
+ switch (type) {
+   case TimeOut:
+     Serial.println(F("Time Out!"));
+     break;
+   case WrongStack:
+     Serial.println(F("Stack Wrong!"));
+     break;
+   case DFPlayerCardInserted:
+     Serial.println(F("Card Inserted!"));
+     break;
+   case DFPlayerCardRemoved:
+     Serial.println(F("Card Removed!"));
+     break;
+   case DFPlayerCardOnline:
+     Serial.println(F("Card Online!"));
+     break;
+   case DFPlayerUSBInserted:
+     Serial.println("USB Inserted!");
+     break;
+   case DFPlayerUSBRemoved:
+     Serial.println("USB Removed!");
+     break;
+   case DFPlayerPlayFinished:
+     Serial.print(F("Number:"));
+     Serial.print(value);
+     Serial.println(F(" Play Finished!"));
+     break;
+   case DFPlayerError:
+     Serial.print(F("DFPlayerError:"));
+     switch (value) {
+       case Busy:
+         Serial.println(F("Card not found"));
+         break;
+       case Sleeping:
+         Serial.println(F("Sleeping"));
+         break;
+       case SerialWrongStack:
+         Serial.println(F("Get Wrong Stack"));
+         break;
+       case CheckSumNotMatch:
+         Serial.println(F("Check Sum Not Match"));
+         break;
+       case FileIndexOut:
+         Serial.println(F("File Index Out of Bound"));
+         break;
+       case FileMismatch:
+         Serial.println(F("Cannot Find File"));
+         break;
+       case Advertise:
+         Serial.println(F("In Advertise"));
+         break;
+       default:
+         break;
+     }
+     break;
+   default:
+     break;
+ }
+ 
+}
