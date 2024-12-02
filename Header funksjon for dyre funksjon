@@ -1,0 +1,68 @@
+#include "buttons_braille.h"
+
+void wait_for_start_animals(){
+    if (!is_button_pressed(buttonPins[5])) { // Sjekker siste knapp (pin 7)
+    startknapp_trykket_dyreprogram();
+    Serial.println("Dyreprogram valgt, programmet begynner");
+    delay(3000); // For aa gi litt pusterom
+    letter = 5; // Bytt til neste case
+  }
+}
+
+void animal_sounds_monkey(){
+    // Definer hvilke knapper som skal vaere trykket (1) og ikke trykket (0)
+  const bool expectedState[NUM_BUTTONS] = {true, true, false, true, true, true}; // Tilpass til kravene for A
+
+  bool allCorrect = true;
+
+  for (int i = 0; i < NUM_BUTTONS; i++) {
+    // Sjekk om hver knapp er i forventet tilstand
+    if (is_button_pressed(buttonPins[i]) != expectedState[i]) {
+      allCorrect = false; // Hvis en knapp ikke er i riktig tilstand
+      break; // Avslutt sjekk tidlig
+    }
+  }
+
+  if (allCorrect) {
+    riktig_bra_jobba_dyr();
+    vibrate_right();
+    delay(1800);
+    Serial.println("Riktig knapp trykket! Gaar videre til neste dyr");
+    letter = 6;
+  } else {
+    feil_prov_igjen();
+    delay(1400);
+    vibrate_wrong();
+    Serial.println("Proov igjen!");
+    letter = 5;
+  }
+}
+
+void animal_sounds_cow(){
+    // Definer hvilke knapper som skal vaere trykket (1) og ikke trykket (0)
+  const bool expectedState[NUM_BUTTONS] = {false, true, false, true, true, true}; // Tilpass til kravene for A
+
+  bool allCorrect = true;
+
+  for (int i = 0; i < NUM_BUTTONS; i++) {
+    // Sjekk om hver knapp er i forventet tilstand
+    if (is_button_pressed(buttonPins[i]) != expectedState[i]) {
+      allCorrect = false; // Hvis en knapp ikke er i riktig tilstand
+      break; // Avslutt sjekk tidlig
+    }
+  }
+
+  if (allCorrect) {
+    riktig_bra_jobba_dyr();
+    vibrate_right();
+    delay(1800);
+    Serial.println("Riktig knapp trykket! Gaar videre til neste dyr");
+    letter = 7;
+  } else {
+    feil_prov_igjen();
+    delay(1400);
+    vibrate_wrong();
+    Serial.println("Proov igjen!");
+    letter = 6;
+  }
+}
